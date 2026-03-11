@@ -6,7 +6,9 @@ export default function LoginButtons() {
       <Link href="/sign-up" className="p-1">
         Sign up
       </Link>
-      <div className="p-1">Login</div>
+      <Link href="/login" className="p-1">
+        Login
+      </Link>
     </div>
   );
 }

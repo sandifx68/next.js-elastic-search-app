@@ -12,10 +12,9 @@ describe('Navbar', () => {
   });
 
   it('renders Login', () => {
-    expect(
-      screen.getByText('Login') //.closest('a')).toHaveAttribute(
-      // 'href',
-      // '/login'
+    expect(screen.getByText('Login').closest('a')).toHaveAttribute(
+      'href',
+      '/login'
     );
   });
 
