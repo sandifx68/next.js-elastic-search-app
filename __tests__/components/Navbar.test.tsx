@@ -20,10 +20,9 @@ describe('Navbar', () => {
   });
 
   it('renders Sign up', () => {
-    expect(
-      screen.getByText('Sign up') //.closest('a')).toHaveAttribute(
-      // 'href',
-      // '/signup'
+    expect(screen.getByText('Sign up').closest('a')).toHaveAttribute(
+      'href',
+      '/sign-up'
     );
   });
 });
