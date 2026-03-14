@@ -47,7 +47,22 @@ describe('Sign up page', () => {
     ).toBeInTheDocument();
   });
 
+  it('shows error when there is a problem on the server side', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => ({
+        errors: ['there is a server error'],
+      }),
+    });
+    await userEvent.type(screen.getByLabelText('Username'), 'john');
+    await userEvent.type(screen.getByLabelText('Password'), 'pass');
+    await userEvent.type(screen.getByLabelText('Confirm password'), 'pass');
+    await userEvent.click(screen.getByRole('button', { name: 'Sign up!' }));
+    expect(screen.getByText(/there is a server error/i)).toBeInTheDocument();
+  });
+
   it('redirects to home on successful submit', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
     await userEvent.type(screen.getByLabelText('Username'), 'john');
     await userEvent.type(screen.getByLabelText('Password'), 'password123');
     await userEvent.type(

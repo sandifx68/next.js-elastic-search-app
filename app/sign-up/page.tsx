@@ -11,12 +11,6 @@ export default function Page() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  async function createUser() {
-    console.log(
-      `User: ${username}, Password: ${password}, Confirm Password: ${confirmPassword}`
-    );
-  }
-
   function blankError(field: string) {
     return `${field} cannot be blank`;
   }
@@ -49,8 +43,17 @@ export default function Page() {
       return;
     }
 
-    // TODO: handle server side errors
-    createUser();
+    const signUpResponse = await fetch('api/users', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: { 'Content-type': 'application/json' },
+    });
+    if (!signUpResponse.ok) {
+      const errorString = (await signUpResponse.json()).errors.join('. ');
+      setError(errorString);
+      return;
+    }
+
     router.push('/');
   }
 
