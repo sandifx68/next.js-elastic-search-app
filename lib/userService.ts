@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import prisma from './prisma';
 import ValidationError from './ValidationError';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { User } from '@/app/generated/prisma/client';
 
 export async function createUser(username: string, password: string) {
   const encryptedPassword = await bcrypt.hash(password, 10);
@@ -15,4 +16,16 @@ export async function createUser(username: string, password: string) {
     }
     throw e; // rethrow any other unexpected errors
   }
+}
+
+export async function verifyPassword(
+  username: string,
+  password: string
+): Promise<User | boolean> {
+  const user = await prisma.user.findUnique({ where: { username } });
+
+  if (!user) return false;
+
+  const match = await bcrypt.compare(password, user.password);
+  return match ? user : false;
 }

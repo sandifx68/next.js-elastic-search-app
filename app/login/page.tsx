@@ -10,10 +10,6 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  async function createSession() {
-    console.log(`User: ${username}, Password: ${password}`);
-  }
-
   function blankError(field: string) {
     return `${field} cannot be blank`;
   }
@@ -42,9 +38,19 @@ export default function Page() {
       return;
     }
 
-    // TODO: handle server side errors
-    createSession();
+    const loginResponse = await fetch('api/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+      headers: { 'Content-type': 'application/json' },
+    });
+    if (!loginResponse.ok) {
+      const error = (await loginResponse.json()).errors.join('. ');
+      setError(error);
+      return;
+    }
+
     router.push('/');
+    router.refresh();
   }
 
   return (
