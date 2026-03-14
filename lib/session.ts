@@ -25,3 +25,7 @@ export async function setSession(user: User) {
   session.username = user.username;
   await session.save();
 }
+
+export async function getSession() {
+  return getIronSession<SessionData>(await cookies(), sessionOptions);
+}

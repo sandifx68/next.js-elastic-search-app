@@ -4,8 +4,9 @@ import '@testing-library/jest-dom';
 import Page from '@/app/sign-up/page';
 
 const mockPush = jest.fn();
+const mockRefresh = jest.fn();
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
 }));
 
 describe('Sign up page', () => {

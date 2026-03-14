@@ -1,4 +1,4 @@
-import { setSession } from '@/lib/session';
+import { getSession, setSession } from '@/lib/session';
 import { getIronSession } from 'iron-session';
 import { cookies } from 'next/headers';
 
@@ -30,5 +30,12 @@ describe('setSession', () => {
     expect(mockSession.userId).toBe(1);
     expect(mockSession.username).toBe('john');
     expect(mockSave).toHaveBeenCalled();
+  });
+});
+
+describe('getSession', () => {
+  it('calls getIronSession', async () => {
+    await getSession();
+    expect(mockGetIronSession).toHaveBeenCalled();
   });
 });
