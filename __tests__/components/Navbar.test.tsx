@@ -2,6 +2,13 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Navbar from '@/app/components/Navbar';
 import { SessionProvider } from '@/app/components/SessionProvider';
+import userEvent from '@testing-library/user-event';
+
+const mockPush = jest.fn();
+const mockRefresh = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
+}));
 
 describe('Navbar', () => {
   describe('when not logged in', () => {
@@ -42,7 +49,16 @@ describe('Navbar', () => {
     });
 
     it('renders the logout text', () => {
-      expect(screen.getByText('Logout').closest('a'));
+      expect(screen.getByText('Logout')).toBeInTheDocument();
+    });
+
+    it('clicking logout destroys the session', async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Logout' }));
+      expect(global.fetch).toHaveBeenCalledWith('/api/logout', {
+        method: 'POST',
+      });
+      expect(mockPush).toHaveBeenCalledWith('/');
+      expect(mockRefresh).toHaveBeenCalled();
     });
   });
 });
