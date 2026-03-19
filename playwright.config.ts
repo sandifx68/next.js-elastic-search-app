@@ -78,6 +78,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       DATABASE_URL: process.env.DATABASE_URL_TEST!,
+      SECRET_COOKIE_PASSWORD: 'some-random-32-character-string!!',
     },
   },
 });
