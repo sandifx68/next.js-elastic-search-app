@@ -1,5 +1,5 @@
 import prisma from './prisma';
 
 export async function getPosts() {
-  return prisma.post.findMany();
+  return prisma.post.findMany({ include: { author: true } });
 }
