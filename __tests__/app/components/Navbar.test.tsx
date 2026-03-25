@@ -52,6 +52,13 @@ describe('Navbar', () => {
       expect(screen.getByText('Logout')).toBeInTheDocument();
     });
 
+    it('renders the new post link', () => {
+      expect(screen.getByText('New post').closest('a')).toHaveAttribute(
+        'href',
+        'new-post'
+      );
+    });
+
     it('clicking logout destroys the session', async () => {
       await userEvent.click(screen.getByRole('button', { name: 'Logout' }));
       expect(global.fetch).toHaveBeenCalledWith('/api/logout', {
