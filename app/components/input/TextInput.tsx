@@ -3,6 +3,7 @@ interface InputProps {
   label: string;
   type?: 'text' | 'password';
   value: string;
+  centered?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -10,11 +11,18 @@ export default function TextInput({
   id,
   label,
   type = 'text',
+  centered = true,
   value,
   onChange,
 }: InputProps) {
+  let divClass;
+  if (centered) {
+    divClass = divClass + ' m-4 flex flex-col items-center';
+  } else {
+    divClass = divClass + ' m-4 flex flex-col';
+  }
   return (
-    <div className="m-4 flex flex-col items-center">
+    <div className={divClass}>
       <label htmlFor={id}>{label}</label>
       <input
         id={id}
