@@ -2,11 +2,16 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import Page from '@/app/new-post/page';
+import ValidationError from '@/lib/ValidationError';
+import { createPost } from '@/lib/postActions';
 
 const mockPush = jest.fn();
 const mockRefresh = jest.fn();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush, refresh: mockRefresh }),
+}));
+jest.mock('@/lib/postActions', () => ({
+  createPost: jest.fn(),
 }));
 
 describe('New post page', () => {
@@ -53,23 +58,17 @@ describe('New post page', () => {
     ).toBeInTheDocument();
   });
 
-  it('displays sever side error', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: false,
-      json: async () => ({
-        errors: ['nah that aint it'],
-      }),
-    });
+  it('displays server side validation error', async () => {
+    (createPost as jest.Mock).mockRejectedValue(
+      new ValidationError('nah that aint it')
+    );
     await userEvent.type(screen.getByLabelText('Title'), 'john');
     await userEvent.click(screen.getByRole('button', { name: 'Create post!' }));
     expect(screen.getByText(/nah that aint it/i)).toBeInTheDocument();
   });
 
-  it('displays general sever side error', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: false,
-      json: jest.fn().mockResolvedValue({ errors: [] }),
-    });
+  it('displays general server side error', async () => {
+    (createPost as jest.Mock).mockRejectedValue(new Error('unexpected'));
     await userEvent.type(screen.getByLabelText('Title'), 'john');
     await userEvent.click(screen.getByRole('button', { name: 'Create post!' }));
     expect(
@@ -78,10 +77,9 @@ describe('New post page', () => {
   });
 
   it('redirects to home on successful submit', async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+    (createPost as jest.Mock).mockResolvedValue({ id: 1 });
     await userEvent.type(screen.getByLabelText('Title'), 'title');
     await userEvent.click(screen.getByRole('button', { name: 'Create post!' }));
     expect(mockPush).toHaveBeenCalledWith('/');
-    expect(mockRefresh).toHaveBeenCalled();
   });
 });

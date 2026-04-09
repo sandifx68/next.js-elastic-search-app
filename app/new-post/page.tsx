@@ -3,6 +3,8 @@
 import { SubmitEvent, useState } from 'react';
 import TextInput from '../components/input/TextInput';
 import { useRouter } from 'next/navigation';
+import { createPost } from '@/lib/postActions';
+import ValidationError from '@/lib/ValidationError';
 
 export default function Page() {
   const router = useRouter();
@@ -31,26 +33,24 @@ export default function Page() {
       return;
     }
 
-    const postResponse = await fetch('api/post', {
-      method: 'POST',
-      body: JSON.stringify({ title, description }),
-      headers: { 'Content-type': 'application/json' },
-    });
-    if (!postResponse.ok) {
-      const error = (await postResponse.json()).errors.join('. ');
-      setError(error || 'There was an error creating the post.');
+    try {
+      await createPost(title, description);
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        setError(e.message);
+      } else {
+        setError('There was an error creating the post.');
+      }
       return;
     }
 
     router.push('/');
-    router.refresh();
   }
 
   return (
     <div className="grid h-full grid-cols-12 grid-rows-12">
       <form
         className="border-accent bg-secondary col-span-12 row-span-12 flex flex-col overflow-hidden rounded-md border md:col-span-8 md:col-start-3 md:row-span-10 md:row-start-2 lg:col-span-6 lg:col-start-4"
-        method="POST"
         onSubmit={handleSubmit}
       >
         <p className="mt-4 text-center">Create new post</p>
